@@ -14,9 +14,9 @@ export default function IndexPage() {
         e.preventDefault();
         const res = await login(username, password);
         if (res?.role == "admin") {
-            router.push('/dashboard')
+            router.push('/dashboard/admin')
         } else {
-            router.push('/dashboard')
+            router.push('/dashboard/user')
         }
     };
 

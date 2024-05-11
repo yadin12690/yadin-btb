@@ -1,13 +1,13 @@
 export interface User {
     id: string;
     email: string;
-    role: 'admin' | 'non-admin';
+    role: 'admin' | 'user';
     password: string;
 }
 
 export const mockUsers: User[] = [
     { id: '1', email: 'admin@system.com', role: 'admin', password: 'adminPassword' },
-    { id: '2', email: 'user@system.com', role: 'non-admin', password: 'nonAdminPassword' },
+    { id: '2', email: 'user@system.com', role: 'user', password: 'nonAdminPassword' },
 ];
 
 

@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const login = async (username: string, password: string) => {
         const user = await authenticate(username, password);
-        console.log(user);
         if (user) {
             setUser(user);
             if (user.role === "admin") {

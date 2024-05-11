@@ -1,7 +1,12 @@
 import { useQuery } from 'react-query';
+import { CharacterResponse } from '../utils/providers/types/character';
+import { LocationResponse } from '../utils/providers/types/location';
 
-const fetchData = async () => {
-    const apiUrl = "https://rickandmortyapi.com/api";
+const fetchData = async (role: "admin" | "user" | undefined) => {
+
+    const adminApiRoute = "https://rickandmortyapi.com/api/character";
+    const userApiRoute = "https://rickandmortyapi.com/api/location";
+
     const options = {
         method: "GET",
         headers: {
@@ -11,8 +16,8 @@ const fetchData = async () => {
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         },
     };
-    const response = fetch(
-        apiUrl,
+    const response: CharacterResponse[] | LocationResponse[] = await fetch(
+        role == "admin" ? adminApiRoute : userApiRoute,
         options
     )
         .then((response) => response.json())
@@ -22,6 +27,6 @@ const fetchData = async () => {
 
 };
 
-export const useData = () => {
-    return useQuery('items', fetchData);
+export const useData = (role: "admin" | "user" | undefined) => {
+    return useQuery('items', () => fetchData(role)); // Pass role to fetchData function
 };
