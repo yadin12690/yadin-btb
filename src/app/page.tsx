@@ -12,12 +12,11 @@ export default function Home() {
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-center text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Welcome to the Admin Panel for "Be The Bank"
+                Welcome to the Admin Panel for &quot;Be The Bank&quot;
               </h1>
-
               <div className="rounded-md shadow">
                 <button onClick={() => router.push('/login')}
-                  className="w-full uppercase flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                  className="w-full uppercase flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-400 hover:bg-teal-600 md:py-4 md:text-lg md:px-10">
                   Start by Sign In!
                 </button>
               </div>
