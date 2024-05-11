@@ -1,6 +1,18 @@
 **Live Demo**🌟:
 [https://yadin-btb.vercel.app/](https://yadin-btb.vercel.app/)
 
+## Mock Users:
+
+# Admin:
+
+user: admin@system.com
+pass: password: adminPassword
+
+# User
+
+user:user@system.com
+pass: password: nonAdminPassword
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
