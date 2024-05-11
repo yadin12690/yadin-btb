@@ -2,16 +2,22 @@
 
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function IndexPage() {
     const { login } = useAuth();
-
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const res = await login(username, password);
+        if (res?.role == "admin") {
+            router.push('/dashboard/admin')
+        } else {
+            router.push('/dashboard/user')
+        }
     };
 
 

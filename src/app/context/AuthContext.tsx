@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 interface AuthContextType {
     user: User | null;
-    login: (username: string, password: string) => Promise<void>;
+    login: (username: string, password: string) => Promise<User | null>;
     logout: () => void;
 }
 
@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const login = async (username: string, password: string) => {
         const user = await authenticate(username, password);
-        console.log(user);
         if (user) {
             setUser(user);
             if (user.role === "admin") {
@@ -36,6 +35,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } else {
             notifyErr();
         }
+        return user;
     };
 
     const logout = () => {
