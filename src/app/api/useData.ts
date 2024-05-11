@@ -23,7 +23,7 @@ const fetchData = async (role: "admin" | "user" | undefined) => {
         return [...adminResponse, ...userResponse] as (CharacterResponse | LocationResponse)[];
     } else {
         const response = await fetch(
-            role === "user" ? userApiRoute : adminApiRoute,
+            userApiRoute,
             options
         ).then(response => response.json());
         return response as LocationResponse[];

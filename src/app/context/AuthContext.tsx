@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return user;
     };
 
+    //Todo logout the user
     const logout = () => {
         setUser(null);
     };
