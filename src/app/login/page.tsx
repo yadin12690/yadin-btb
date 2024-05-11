@@ -17,7 +17,7 @@ export default function IndexPage() {
         const userRoleFromLocalStorage = localStorage.getItem("userRole");
         if (res?.role == "admin" || userRoleFromLocalStorage == "admin") {
             router.push('/dashboard/admin')
-        } else {
+        } else if (res?.role == "user" || userRoleFromLocalStorage == "user") {
             router.push('/dashboard/user')
         }
     };

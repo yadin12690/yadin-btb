@@ -3,7 +3,7 @@
 import { useData } from "@/app/api/useData";
 import { useAuth } from "@/app/context/AuthContext";
 import { LocationResponse } from "@/app/utils/providers/types/location";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
@@ -15,12 +15,39 @@ import { BackToLogin } from "@/app/components/backToLogin";
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
     const { data: items, isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
+    // State for search query and filtered results
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredItems, setFilteredItems] = useState<Location[]>([]);
 
 
     useEffect(() => {
-        console.log(items);
+        if (items && 'results' in items) {
+            // Set initial filtered items
+            setFilteredItems(items.results as Location[]);
+        }
     }, [items]);
 
+    // Handle search input change
+    interface Location {
+        id: string;
+        name: string;
+        type: string;
+        dimension: string;
+    }
+
+    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+    };
+
+    // Perform search and update filtered items
+    useEffect(() => {
+        if (items && 'results' in items) {
+            const filtered = (items.results as Location[]).filter(item =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredItems(filtered);
+        }
+    }, [searchQuery, items]);
     if (isError) return toast.error("Error while getting data");
 
 
@@ -46,7 +73,9 @@ export default function IndexPage() {
                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                         </div>
-                        <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter location name" required />
+                        <input type="search" value={searchQuery}
+                            onChange={handleSearchInputChange}
+                            id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter location name" required />
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                 </form>
@@ -69,14 +98,19 @@ export default function IndexPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {items && ('results' in items && (items as unknown as LocationResponse).results.map((item, idx) => (
+                                        {filteredItems.length === 0 && (
+                                            <tr className="border-b border-neutral-200 dark:border-white/10">
+                                                <td colSpan={4} className="whitespace-nowrap px-6 py-4 font-black">No data found</td>
+                                            </tr>
+                                        )}
+                                        {filteredItems.map((item, idx) => (
                                             <tr key={idx} className="border-b border-neutral-200 dark:border-white/10">
                                                 <td className="whitespace-nowrap px-6 py-4 font-black">{item.id}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.name}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.type}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.dimension}</td>
                                             </tr>
-                                        )))}
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
