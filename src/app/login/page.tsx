@@ -13,7 +13,9 @@ export default function IndexPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const res = await login(username, password);
-        if (res?.role == "admin") {
+        // Get the user role from local storage to redirect to the correct dashboard
+        const userRoleFromLocalStorage = localStorage.getItem("userRole");
+        if (res?.role == "admin" || userRoleFromLocalStorage == "admin") {
             router.push('/dashboard/admin')
         } else {
             router.push('/dashboard/user')

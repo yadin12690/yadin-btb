@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const user = await authenticate(username, password);
         if (user) {
             setUser(user);
+            localStorage.setItem("userRole", user.role)
             if (user.role === "admin") {
                 notifyAdminLoginSuccess();
             } else {
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return user;
     };
 
+    //Todo logout the user
     const logout = () => {
         setUser(null);
     };

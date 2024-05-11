@@ -13,17 +13,21 @@ const fetchData = async (role: "admin" | "user" | undefined) => {
             accept: "application/json",
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         },
     };
-    const response: CharacterResponse[] | LocationResponse[] = await fetch(
-        role == "admin" ? adminApiRoute : userApiRoute,
-        options
-    )
-        .then((response) => response.json())
-        .catch((err) => console.error(err));
-
-    return response;
+    if (role === "admin") {
+        const [adminResponse, userResponse] = await Promise.all([
+            fetch(adminApiRoute, options).then(response => response.json()),
+            fetch(userApiRoute, options).then(response => response.json())
+        ]);
+        return [...adminResponse, ...userResponse] as (CharacterResponse | LocationResponse)[];
+    } else {
+        const response = await fetch(
+            userApiRoute,
+            options
+        ).then(response => response.json());
+        return response as LocationResponse[];
+    }
 
 };
 
