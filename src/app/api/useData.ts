@@ -5,7 +5,7 @@ import { LocationResponse } from '../utils/providers/types/location';
 const fetchData = async (role: "admin" | "user" | undefined) => {
 
     const adminApiRoute = "https://rickandmortyapi.com/api/character";
-    const userApiRoute = "https://rickandmortyapi.com/api/location";
+    const userApiRoute = "https://rickandmortyapi.com/api/location?name=Abadango";
 
     const options = {
         method: "GET",
