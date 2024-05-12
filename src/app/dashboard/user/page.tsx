@@ -2,7 +2,7 @@
 
 import { fetchUserData, useData } from "@/app/api/useData";
 import { useAuth } from "@/app/context/AuthContext";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
