@@ -38,6 +38,8 @@ export default function IndexPage() {
                     item.name.toLowerCase()
                 );
                 setSearchSuggestions(filtered.slice(0, 5)); // Show top 5 suggestions
+            } else {
+                setSearchSuggestions([]);
             }
         }
     };
