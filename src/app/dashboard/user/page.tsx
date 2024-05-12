@@ -1,59 +1,56 @@
 'use client';
 
-import { useData } from "@/app/api/useData";
+import { fetchUserData, useData } from "@/app/api/useData";
 import { useAuth } from "@/app/context/AuthContext";
-import { LocationResponse } from "@/app/utils/providers/types/location";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
 import { loadinSpinner } from "@/app/components/loadingSpinner";
 import { BackToLogin } from "@/app/components/backToLogin";
+import { useQuery, useQueryClient } from "react-query";
+import { Location, LocationResponse } from "@/app/utils/providers/types/location";
 
 //user page
 
+
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
+    const [searchQuery, setSearchQuery] = useState("");
     const { data: items, isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
     // State for search query and filtered results
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filteredItems, setFilteredItems] = useState<Location[]>([]);
-
+    const [searchSuggestions, setSearchSuggestions] = useState<Location[]>([]);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
-        if (items && 'results' in items) {
-            // Set initial filtered items
-            setFilteredItems(items.results as Location[]);
-        }
-    }, [items]);
+        console.log({ searchSuggestions });
+        console.log({ searchQuery });
+    }, [searchSuggestions, searchQuery])
 
-    // Handle search input change
-    interface Location {
-        id: string;
-        name: string;
-        type: string;
-        dimension: string;
-    }
-
-    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Function to handle search input change
+    const handleSearchInputChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
-    };
+        // Enable the query when the search query changes
+        if (event.target.value !== "") {
+            const res = await queryClient.setQueryData(['items', event.target.value], () => fetchUserData(event.target.value));
+            if (res) {
+                const filtered = Array.isArray(res) ? res.filter((item) =>
+                    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                ) : [];
+                setSearchSuggestions(filtered.slice(0, 5)); // Show top 5 suggestions
+            }
+        } else {
+            setSearchSuggestions([]);
 
-    // Perform search and update filtered items
-    useEffect(() => {
-        if (items && 'results' in items) {
-            const filtered = (items.results as Location[]).filter(item =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredItems(filtered);
         }
-    }, [searchQuery, items]);
+    }, [queryClient, searchQuery]);
+
     if (isError) return toast.error("Error while getting data");
 
 
 
     return (
-        <section className="bg-gray-50 dark:bg-gray-900">
+        <section className="bg-gray-50 dark:bg-gray-900 min-h-[100vh]">
             <div className="container flex justify-center flex-col text-center gap-12 py-8">
                 <BackToLogin />
 
@@ -65,7 +62,9 @@ export default function IndexPage() {
                         className="w-20 h-auto" />
                 </div>
 
-                <form className="w-3/5 max-w-md mx-auto">
+                {isLoading && loadinSpinner()}
+
+                {!isLoading && <form className="w-3/5 max-w-md mx-auto">
                     <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                     <div className="relative">
                         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -78,11 +77,20 @@ export default function IndexPage() {
                             id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter location name" required />
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
-                </form>
+                    {searchSuggestions.length > 0 && (
+                        <div className="absolute w-1/2 bg-customBlue shadow-lg mt-2 rounded-lg">
+                            {searchSuggestions.map((suggestion, index) => (
+                                <div onClick={() => setSearchQuery(suggestion.name)} key={index} className=" p-2 hover:bg-[#062876] cursor-pointer">
+                                    <p className="text-white">{suggestion.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </form>}
 
-                {isLoading && loadinSpinner()}
 
-                <div className="m-auto">
+
+                {/* <div className="m-auto">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
                             <div className="overflow-hidden">
@@ -116,7 +124,7 @@ export default function IndexPage() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </section>
     );

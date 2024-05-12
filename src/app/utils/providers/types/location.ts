@@ -1,6 +1,6 @@
 type Resident = string;
 
-interface Location {
+export interface Location {
     id: number;
     name: string;
     type: string;
@@ -13,8 +13,8 @@ interface Location {
 interface Info {
     count: number;
     pages: number;
-    next: string | null;
-    prev: string | null;
+    next?: string | null;
+    prev?: string | null;
 }
 
 export interface LocationResponse {

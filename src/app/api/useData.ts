@@ -2,10 +2,12 @@ import { useQuery } from 'react-query';
 import { CharacterResponse } from '../utils/providers/types/character';
 import { LocationResponse } from '../utils/providers/types/location';
 
-const fetchData = async (role: "admin" | "user" | undefined) => {
+// Fetch data based on the user's role
+
+export const fetchAdminData = async (role: "admin" | "user" | undefined, userSearchQuery?: string): Promise<LocationResponse[] | CharacterResponse[] | undefined> => {
 
     const adminApiRoute = "https://rickandmortyapi.com/api/character";
-    const userApiRoute = "https://rickandmortyapi.com/api/location";
+    const userApiRoute = "https://rickandmortyapi.com/api/location?name=" + userSearchQuery;
 
     const options = {
         method: "GET",
@@ -17,20 +19,47 @@ const fetchData = async (role: "admin" | "user" | undefined) => {
     };
     if (role === "admin") {
         const [adminResponse, userResponse] = await Promise.all([
-            fetch(adminApiRoute, options).then(response => response.json()),
-            fetch(userApiRoute, options).then(response => response.json())
+            fetch(adminApiRoute, options).then(response => response.json()).catch(error => { console.error(error) }),
+            fetch(userApiRoute, options).then(response => response.json().catch(error => { console.error(error) }))
         ]);
-        return [...adminResponse, ...userResponse] as (CharacterResponse | LocationResponse)[];
-    } else {
+        return [...adminResponse, ...userResponse] as CharacterResponse[];
+    }
+}
+
+
+export const fetchUserData = async (userSearchQuery?: string): Promise<LocationResponse | undefined> => {
+    const userApiRoute = "https://rickandmortyapi.com/api/location?name=" + userSearchQuery;
+
+    const options = {
+        method: "GET",
+        headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+    };
+
+    if (userSearchQuery !== undefined) {
         const response = await fetch(
             userApiRoute,
             options
-        ).then(response => response.json());
-        return response as LocationResponse[];
+        ).then(response => response.json()).catch(error => { console.error(error) });
+        return response.results as LocationResponse;
     }
+    return undefined;
+}
 
-};
 
-export const useData = (role: "admin" | "user" | undefined) => {
-    return useQuery('items', () => fetchData(role)); // Pass role to fetchData function
+export const useData = (role: "admin" | "user" | undefined, userSearchQuery?: string) => {
+
+    const userRole = role;
+
+    return useQuery('items', () => {
+        if (userRole == 'admin') {
+            fetchAdminData(role, userSearchQuery)
+        }
+        else {
+            fetchUserData(userSearchQuery)
+        }
+    });
 };
