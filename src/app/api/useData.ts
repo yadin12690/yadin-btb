@@ -56,10 +56,10 @@ export const useData = (role: "admin" | "user" | undefined, userSearchQuery?: st
 
     return useQuery('items', () => {
         if (userRole == 'admin') {
-            fetchAdminData(role, userSearchQuery)
+            fetchAdminData(role, userSearchQuery);
         }
-        else {
-            fetchUserData(userSearchQuery)
+        else if (userRole == 'user') {
+            fetchUserData(userSearchQuery);
         }
     });
 };

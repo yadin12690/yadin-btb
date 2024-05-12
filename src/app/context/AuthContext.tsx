@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (user.role === "admin") {
                 notifyAdminLoginSuccess();
             } else {
-                notifyUserLoginSuccess()
+                notifyUserLoginSuccess();
             }
         } else {
             notifyErr();
