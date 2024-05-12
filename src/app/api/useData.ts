@@ -4,9 +4,9 @@ import { LocationResponse } from '../utils/providers/types/location';
 
 // Fetch data based on the user's role
 
-export const fetchAdminData = async (role: "admin" | "user" | undefined, userSearchQuery?: string): Promise<LocationResponse[] | CharacterResponse[] | undefined> => {
+export const fetchAdminData = async (role: "admin" | "user" | undefined, userSearchQuery?: string): Promise<LocationResponse & CharacterResponse | undefined> => {
 
-    const adminApiRoute = "https://rickandmortyapi.com/api/character";
+    const adminApiRoute = "https://rickandmortyapi.com/api/character?name=" + userSearchQuery;
     const userApiRoute = "https://rickandmortyapi.com/api/location?name=" + userSearchQuery;
 
     const options = {
@@ -22,7 +22,7 @@ export const fetchAdminData = async (role: "admin" | "user" | undefined, userSea
             fetch(adminApiRoute, options).then(response => response.json()).catch(error => { console.error(error) }),
             fetch(userApiRoute, options).then(response => response.json().catch(error => { console.error(error) }))
         ]);
-        return [...adminResponse, ...userResponse] as CharacterResponse[];
+        return { ...adminResponse, ...userResponse };
     }
 }
 

@@ -16,8 +16,7 @@ import { Location } from "@/app/utils/providers/types/location";
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
     const [searchQuery, setSearchQuery] = useState("");
-    const { data: items, isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
-    // State for search query and filtered results
+    const { isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
     const [searchSuggestions, setSearchSuggestions] = useState<Location[]>([]);
     const queryClient = useQueryClient();
 
@@ -28,7 +27,7 @@ export default function IndexPage() {
         if (event.target.value !== "") {
             const res = await queryClient.setQueryData(['items', event.target.value], () => fetchUserData(event.target.value));
             if (res) {
-                const filtered = Array.isArray(res) ? res.filter((item) =>
+                const filtered = Array.isArray(res) ? res.filter((item: Location) =>
                     item.name.toLowerCase().includes(searchQuery.toLowerCase())
                 ) : [];
                 setSearchSuggestions(filtered.slice(0, 5)); // Show top 5 suggestions
@@ -79,8 +78,6 @@ export default function IndexPage() {
                         </div>
                     )}
                 </form>}
-
-
 
                 <div className="m-auto mt-32">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">

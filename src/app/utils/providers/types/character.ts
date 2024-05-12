@@ -5,7 +5,7 @@ interface Location {
     url: string;
 }
 
-interface Character {
+export interface Character {
     id: number;
     name: string;
     status: string;
