@@ -1,4 +1,4 @@
-export const loadinSpinner = () => {
+export const LoadinSpinner = () => {
     return (
         <div role="status" className="flex justify-center align-middle flex-row gap-3 text-center">
             <h2 className="bold">Loading User data</h2>

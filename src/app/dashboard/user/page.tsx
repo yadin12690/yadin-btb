@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
-import { loadinSpinner } from "@/app/components/LoadingSpinner";
+import { LoadinSpinner } from "@/app/components/LoadingSpinner";
 import { BackToLogin } from "@/app/components/BackToLogin";
 import { useQueryClient } from "react-query";
 import { Location } from "@/app/utils/providers/types/location";
@@ -54,7 +54,7 @@ export default function IndexPage() {
                         className="w-20 h-auto" />
                 </div>
 
-                {isLoading && loadinSpinner()}
+                {isLoading && LoadinSpinner()}
 
                 {!isLoading && <form className="w-3/5 max-w-md mx-auto">
                     <SearchBar searchQuery={searchQuery} handleSearchInputChange={handleSearchInputChange} />
