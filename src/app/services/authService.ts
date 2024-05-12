@@ -11,7 +11,7 @@ export const mockUsers: User[] = [
 ];
 
 
-export const authenticate = (username: string, password: string): User | null => {
+export const authenticate = (username: string, password: string): Promise<User | null> => {
     const user = mockUsers.find(u => u.email === username && u.password === password);
-    return user || null;
+    return Promise.resolve(user || null);
 };

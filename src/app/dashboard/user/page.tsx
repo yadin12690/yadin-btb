@@ -1,23 +1,18 @@
 'use client';
 
-import { fetchData, useData } from "@/app/api/useData";
+import { fetchUserData, useData } from "@/app/api/useData";
 import { useAuth } from "@/app/context/AuthContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
 import { loadinSpinner } from "@/app/components/loadingSpinner";
 import { BackToLogin } from "@/app/components/backToLogin";
 import { useQuery, useQueryClient } from "react-query";
+import { Location, LocationResponse } from "@/app/utils/providers/types/location";
 
 //user page
 
-interface Location {
-    id: string;
-    name: string;
-    type: string;
-    dimension: string;
-}
 
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
@@ -27,34 +22,31 @@ export default function IndexPage() {
     const [searchSuggestions, setSearchSuggestions] = useState<Location[]>([]);
     const queryClient = useQueryClient();
 
+    useEffect(() => {
+        console.log({ searchSuggestions });
+        console.log({ searchQuery });
+    }, [searchSuggestions, searchQuery])
+
     // Function to handle search input change
-    const handleSearchInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearchInputChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
         // Enable the query when the search query changes
         if (event.target.value !== "") {
-            const res = await queryClient.setQueryData(['items', event.target.value], () => fetchData('user', event.target.value));
-            if (res.results) {
-                const filtered = (res.results).filter((item: Location) =>
-                    item.name.toLowerCase()
-                );
+            const res = await queryClient.setQueryData(['items', event.target.value], () => fetchUserData(event.target.value));
+            if (res) {
+                const filtered = Array.isArray(res) ? res.filter((item) =>
+                    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                ) : [];
                 setSearchSuggestions(filtered.slice(0, 5)); // Show top 5 suggestions
-            } else {
-                setSearchSuggestions([]);
             }
-        }
-    };
+        } else {
+            setSearchSuggestions([]);
 
-    // Perform search and update filtered items
-    useEffect(() => {
-        if (items && 'results' in items) {
-            const filtered = (items.results as Location[]).filter(item =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setSearchSuggestions(filtered.slice(0, 5)); // Get the first 5 search suggestions
         }
-    }, [searchQuery, items]);
+    }, [queryClient, searchQuery]);
 
     if (isError) return toast.error("Error while getting data");
+
 
 
     return (
@@ -72,7 +64,7 @@ export default function IndexPage() {
 
                 {isLoading && loadinSpinner()}
 
-                <form className="w-3/5 max-w-md mx-auto">
+                {!isLoading && <form className="w-3/5 max-w-md mx-auto">
                     <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                     <div className="relative">
                         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -94,7 +86,7 @@ export default function IndexPage() {
                             ))}
                         </div>
                     )}
-                </form>
+                </form>}
 
 
 

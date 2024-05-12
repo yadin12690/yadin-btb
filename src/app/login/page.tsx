@@ -15,9 +15,10 @@ export default function IndexPage() {
         const res = await login(username, password);
         // Get the user role from local storage to redirect to the correct dashboard
         const userRoleFromLocalStorage = localStorage.getItem("userRole");
-        if (res?.role == "admin" || userRoleFromLocalStorage == "admin") {
+
+        if (res?.role == "admin" && userRoleFromLocalStorage == "admin") {
             router.push('/dashboard/admin')
-        } else if (res?.role == "user" || userRoleFromLocalStorage == "user") {
+        } else if (res?.role == "user" && userRoleFromLocalStorage == "user") {
             router.push('/dashboard/user')
         }
     };

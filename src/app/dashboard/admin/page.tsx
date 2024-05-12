@@ -16,10 +16,11 @@ export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
     const { data: items, isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
 
-
-    useEffect(() => {
-        console.log(items);
-    }, [items]);
+    // Check if the user is not an admin
+    if (!user || user.role !== 'admin') {
+        toast.error("Access denied. You must be an admin to view this page.");
+        return <BackToLogin />;
+    }
 
     if (isError) return toast.error("Error while getting data");
 
@@ -52,14 +53,14 @@ export default function IndexPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {items && ('results' in items && (items as unknown as LocationResponse).results.map((item, idx) => (
+                                        {/* {items && ('results' in items && (items as unknown as LocationResponse).results.map((item, idx) => (
                                             <tr key={idx} className="border-b border-neutral-200 dark:border-white/10">
                                                 <td className="whitespace-nowrap px-6 py-4 font-black">{item.id}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.name}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.type}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.dimension}</td>
                                             </tr>
-                                        )))}
+                                        )))} */}
                                     </tbody>
                                 </table>
                             </div>

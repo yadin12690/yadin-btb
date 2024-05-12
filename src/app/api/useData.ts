@@ -4,7 +4,7 @@ import { LocationResponse } from '../utils/providers/types/location';
 
 // Fetch data based on the user's role
 
-export const fetchData = async (role: "admin" | "user" | undefined, userSearchQuery?: string) => {
+export const fetchAdminData = async (role: "admin" | "user" | undefined, userSearchQuery?: string): Promise<LocationResponse[] | CharacterResponse[] | undefined> => {
 
     const adminApiRoute = "https://rickandmortyapi.com/api/character";
     const userApiRoute = "https://rickandmortyapi.com/api/location?name=" + userSearchQuery;
@@ -22,19 +22,44 @@ export const fetchData = async (role: "admin" | "user" | undefined, userSearchQu
             fetch(adminApiRoute, options).then(response => response.json()).catch(error => { console.error(error) }),
             fetch(userApiRoute, options).then(response => response.json().catch(error => { console.error(error) }))
         ]);
-        return [...adminResponse, ...userResponse];
-    } else {
-        if (userSearchQuery !== undefined) {
-            const response = await fetch(
-                userApiRoute,
-                options
-            ).then(response => response.json()).catch(error => { console.error(error) });
-            return response;
-        }
+        return [...adminResponse, ...userResponse] as CharacterResponse[];
     }
+}
 
-};
+
+export const fetchUserData = async (userSearchQuery?: string): Promise<LocationResponse | undefined> => {
+    const userApiRoute = "https://rickandmortyapi.com/api/location?name=" + userSearchQuery;
+
+    const options = {
+        method: "GET",
+        headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+    };
+
+    if (userSearchQuery !== undefined) {
+        const response = await fetch(
+            userApiRoute,
+            options
+        ).then(response => response.json()).catch(error => { console.error(error) });
+        return response.results as LocationResponse;
+    }
+    return undefined;
+}
+
 
 export const useData = (role: "admin" | "user" | undefined, userSearchQuery?: string) => {
-    return useQuery('items', () => fetchData(role, userSearchQuery)); // Pass role to fetchData function
+
+    const userRole = role;
+
+    return useQuery('items', () => {
+        if (userRole == 'admin') {
+            fetchAdminData(role, userSearchQuery)
+        }
+        else {
+            fetchUserData(userSearchQuery)
+        }
+    });
 };
