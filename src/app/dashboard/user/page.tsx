@@ -22,11 +22,6 @@ export default function IndexPage() {
     const [searchSuggestions, setSearchSuggestions] = useState<Location[]>([]);
     const queryClient = useQueryClient();
 
-    useEffect(() => {
-        console.log({ searchSuggestions });
-        console.log({ searchQuery });
-    }, [searchSuggestions, searchQuery])
-
     // Function to handle search input change
     const handleSearchInputChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
