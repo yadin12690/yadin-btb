@@ -1,17 +1,16 @@
 'use client';
 
-import { useData } from "@/app/api/useData";
+import { fetchData, useData } from "@/app/api/useData";
 import { useAuth } from "@/app/context/AuthContext";
-import { LocationResponse } from "@/app/utils/providers/types/location";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
 import { loadinSpinner } from "@/app/components/loadingSpinner";
 import { BackToLogin } from "@/app/components/backToLogin";
+import { useQuery, useQueryClient } from "react-query";
 
 //user page
-
 
 interface Location {
     id: string;
@@ -22,23 +21,25 @@ interface Location {
 
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
+    const [searchQuery, setSearchQuery] = useState("");
     const { data: items, isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
     // State for search query and filtered results
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filteredItems, setFilteredItems] = useState<Location[]>([]);
     const [searchSuggestions, setSearchSuggestions] = useState<Location[]>([]);
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        if (items && 'results' in items) {
-            // Set initial filtered items
-            setFilteredItems(items.results as Location[]);
-        }
-    }, [items]);
-
-    // Handle search input change
-
-    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Function to handle search input change
+    const handleSearchInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
+        // Enable the query when the search query changes
+        if (event.target.value !== "") {
+            const res = await queryClient.setQueryData(['items', event.target.value], () => fetchData('user', event.target.value));
+            if (res.results) {
+                const filtered = (res.results).filter((item: Location) =>
+                    item.name.toLowerCase()
+                );
+                setSearchSuggestions(filtered.slice(0, 5)); // Show top 5 suggestions
+            }
+        }
     };
 
     // Perform search and update filtered items
@@ -47,10 +48,10 @@ export default function IndexPage() {
             const filtered = (items.results as Location[]).filter(item =>
                 item.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
-            setFilteredItems(filtered);
             setSearchSuggestions(filtered.slice(0, 5)); // Get the first 5 search suggestions
         }
     }, [searchQuery, items]);
+
     if (isError) return toast.error("Error while getting data");
 
 
@@ -66,6 +67,8 @@ export default function IndexPage() {
                         sizes="20vw"
                         className="w-20 h-auto" />
                 </div>
+
+                {isLoading && loadinSpinner()}
 
                 <form className="w-3/5 max-w-md mx-auto">
                     <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -83,7 +86,7 @@ export default function IndexPage() {
                     {searchSuggestions.length > 0 && (
                         <div className="absolute w-1/2 bg-customBlue shadow-lg mt-2 rounded-lg">
                             {searchSuggestions.map((suggestion, index) => (
-                                <div key={index} className=" p-2 hover:bg-[#062876] cursor-pointer">
+                                <div onClick={() => setSearchQuery(suggestion.name)} key={index} className=" p-2 hover:bg-[#062876] cursor-pointer">
                                     <p className="text-white">{suggestion.name}</p>
                                 </div>
                             ))}
@@ -91,7 +94,7 @@ export default function IndexPage() {
                     )}
                 </form>
 
-                {isLoading && loadinSpinner()}
+
 
                 {/* <div className="m-auto">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
