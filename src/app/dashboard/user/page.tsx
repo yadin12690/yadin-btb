@@ -8,11 +8,10 @@ import Image from 'next/image';
 import rickandmortyimg from '../../assets/rickandmorty.png';
 import { loadinSpinner } from "@/app/components/loadingSpinner";
 import { BackToLogin } from "@/app/components/backToLogin";
-import { useQuery, useQueryClient } from "react-query";
-import { Location, LocationResponse } from "@/app/utils/providers/types/location";
+import { useQueryClient } from "react-query";
+import { Location } from "@/app/utils/providers/types/location";
 
 //user page
-
 
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
@@ -41,8 +40,6 @@ export default function IndexPage() {
     }, [queryClient, searchQuery]);
 
     if (isError) return toast.error("Error while getting data");
-
-
 
     return (
         <section className="bg-gray-50 dark:bg-gray-900 min-h-[100vh]">
@@ -73,7 +70,7 @@ export default function IndexPage() {
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                     {searchSuggestions.length > 0 && (
-                        <div className="absolute w-1/2 bg-customBlue shadow-lg mt-2 rounded-lg">
+                        <div className="absolute w-2/6 bg-customBlue shadow-lg mt-2 rounded-lg">
                             {searchSuggestions.map((suggestion, index) => (
                                 <div onClick={() => setSearchQuery(suggestion.name)} key={index} className=" p-2 hover:bg-[#062876] cursor-pointer">
                                     <p className="text-white">{suggestion.name}</p>
@@ -85,7 +82,7 @@ export default function IndexPage() {
 
 
 
-                {/* <div className="m-auto">
+                <div className="m-auto mt-32">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
                             <div className="overflow-hidden">
@@ -101,12 +98,12 @@ export default function IndexPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredItems.length === 0 && (
+                                        {searchSuggestions.length === 0 && (
                                             <tr className="border-b border-neutral-200 dark:border-white/10">
                                                 <td colSpan={4} className="whitespace-nowrap px-6 py-4 font-black">No data found</td>
                                             </tr>
                                         )}
-                                        {filteredItems.map((item, idx) => (
+                                        {searchSuggestions.map((item, idx) => (
                                             <tr key={idx} className="border-b border-neutral-200 dark:border-white/10">
                                                 <td className="whitespace-nowrap px-6 py-4 font-black">{item.id}</td>
                                                 <td className="whitespace-nowrap px-6 py-4">{item.name}</td>
@@ -119,7 +116,7 @@ export default function IndexPage() {
                             </div>
                         </div>
                     </div>
-                </div> */}
+                </div>
             </div>
         </section>
     );
