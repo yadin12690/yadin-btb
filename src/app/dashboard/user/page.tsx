@@ -12,13 +12,21 @@ import { BackToLogin } from "@/app/components/backToLogin";
 
 //user page
 
+
+interface Location {
+    id: string;
+    name: string;
+    type: string;
+    dimension: string;
+}
+
 export default function IndexPage() {
     const { user } = useAuth(); // Get the current user
     const { data: items, isLoading, isError } = useData(user?.role); // Fetch data based on the user's role
     // State for search query and filtered results
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredItems, setFilteredItems] = useState<Location[]>([]);
-
+    const [searchSuggestions, setSearchSuggestions] = useState<Location[]>([]);
 
     useEffect(() => {
         if (items && 'results' in items) {
@@ -28,12 +36,6 @@ export default function IndexPage() {
     }, [items]);
 
     // Handle search input change
-    interface Location {
-        id: string;
-        name: string;
-        type: string;
-        dimension: string;
-    }
 
     const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
@@ -46,14 +48,14 @@ export default function IndexPage() {
                 item.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredItems(filtered);
+            setSearchSuggestions(filtered.slice(0, 5)); // Get the first 5 search suggestions
         }
     }, [searchQuery, items]);
     if (isError) return toast.error("Error while getting data");
 
 
-
     return (
-        <section className="bg-gray-50 dark:bg-gray-900">
+        <section className="bg-gray-50 dark:bg-gray-900 min-h-[100vh]">
             <div className="container flex justify-center flex-col text-center gap-12 py-8">
                 <BackToLogin />
 
@@ -78,11 +80,20 @@ export default function IndexPage() {
                             id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter location name" required />
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
+                    {searchSuggestions.length > 0 && (
+                        <div className="absolute w-1/2 bg-customBlue shadow-lg mt-2 rounded-lg">
+                            {searchSuggestions.map((suggestion, index) => (
+                                <div key={index} className=" p-2 hover:bg-[#062876] cursor-pointer">
+                                    <p className="text-white">{suggestion.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </form>
 
                 {isLoading && loadinSpinner()}
 
-                <div className="m-auto">
+                {/* <div className="m-auto">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
                             <div className="overflow-hidden">
@@ -116,7 +127,7 @@ export default function IndexPage() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </section>
     );
