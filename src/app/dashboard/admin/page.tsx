@@ -6,12 +6,12 @@ import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyAdmin from '../../assets/rickadmin.png';
-import { LoadinSpinner } from "@/app/components/LoadingSpinner";
-import { BackToLogin } from "@/app/components/BackToLogin";
 import { useQueryClient } from "react-query";
 import { Location } from "@/app/utils/providers/types/location";
 import { Character } from "@/app/utils/providers/types/character";
 import { SearchBar } from "@/app/components/SearchBar";
+import { BackToLogin } from "@/app/components/BackToLogin";
+import { LoadinSpinner } from "@/app/components/LoadingSpinner";
 
 //user page
 
