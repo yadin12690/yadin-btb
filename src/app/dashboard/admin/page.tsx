@@ -6,13 +6,12 @@ import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import Image from 'next/image';
 import rickandmortyAdmin from '../../assets/rickadmin.png';
-import { LoadinSpinner } from "@/app/components/LoadingSpinner";
-import { BackToLogin } from "@/app/components/BackToLogin";
 import { useQueryClient } from "react-query";
 import { Location } from "@/app/utils/providers/types/location";
 import { Character } from "@/app/utils/providers/types/character";
 import { SearchBar } from "@/app/components/SearchBar";
-
+import { LoginButton } from "@/app/components/LoginButton";
+import { LoadingWheel } from "@/app/components/LoadingWheel";
 //user page
 
 export default function IndexPage() {
@@ -30,7 +29,7 @@ export default function IndexPage() {
     const handleSearchInputChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!user || user.role !== 'admin') {
             toast.error("Access denied. You must be an admin to view this page.");
-            return <BackToLogin />;
+            return <LoginButton />;
         }
         setSearchQuery(event.target.value);
         // Enable the query when the search query changes
@@ -53,7 +52,7 @@ export default function IndexPage() {
     return (
         <section className="bg-gray-50 dark:bg-gray-900 min-h-[100vh]">
             <div className="container flex justify-center flex-col text-center gap-12 py-8">
-                <BackToLogin />
+                <LoginButton />
 
                 <div className="title-container flex flex-row-reverse justify-center align-middle items-center gap-5">
                     <h2 className="text-4xl font-extrabold dark:text-white pt-6">Admin - Rick and Morty</h2>
@@ -63,7 +62,7 @@ export default function IndexPage() {
                         className="w-20 h-auto" />
                 </div>
 
-                {isLoading && LoadinSpinner()}
+                {isLoading && LoadingWheel()}
 
                 {!isLoading && <form className="w-3/5 max-w-md mx-auto">
                     <SearchBar searchQuery={searchQuery} handleSearchInputChange={handleSearchInputChange} />

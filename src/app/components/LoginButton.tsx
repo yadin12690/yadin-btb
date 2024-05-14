@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 
-export const BackToLogin = () => {
+export const LoginButton = () => {
     const router = useRouter();
 
     return (
