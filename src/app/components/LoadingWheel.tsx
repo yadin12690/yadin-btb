@@ -1,4 +1,4 @@
-export const LoadinSpinner = () => {
+export const LoadingWheel = () => {
     return (
         <div role="status" className="flex justify-center align-middle flex-row gap-3 text-center">
             <h2 className="bold">Loading User data</h2>
