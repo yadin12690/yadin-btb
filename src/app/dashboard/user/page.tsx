@@ -9,8 +9,8 @@ import rickandmortyimg from '../../assets/rickandmorty.png';
 import { useQueryClient } from "react-query";
 import { Location } from "@/app/utils/providers/types/location";
 import { SearchBar } from "@/app/components/SearchBar";
-import { BackToLogin } from "../../components/BackToLogin";
-import { LoadinSpinner } from "../../components/LoadingSpinner";
+import { BackToLogin } from "@/app/components/BackToLogin";
+import { LoadinSpinner } from "@/app/components/LoadingSpinner";
 
 //user page
 
